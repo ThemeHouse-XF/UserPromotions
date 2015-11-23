@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<addon addon_id="ThemeHouse_UserPromotions" title="[⌂] User Promotions" version_string="1.0.1" version_id="1447261019" url="http://xf.themehouse.io/" install_callback_class="ThemeHouse_Install" install_callback_method="install" uninstall_callback_class="ThemeHouse_Install" uninstall_callback_method="uninstall">
+  <admin_navigation>
+    <navigation navigation_id="listUserPromotions" parent_navigation_id="userPromotions" display_order="1" link="user-promotions" admin_permission_id="userPromotions" debug_only="0" hide_no_children="0"/>
+    <navigation navigation_id="managePromotedUsers" parent_navigation_id="userPromotions" display_order="10" link="user-promotions/manage" admin_permission_id="userPromotions" debug_only="0" hide_no_children="0"/>
+    <navigation navigation_id="userPromotions" parent_navigation_id="users" display_order="30" link="user-promotions" admin_permission_id="userPromotions" debug_only="0" hide_no_children="0"/>
+  </admin_navigation>
+  <admin_permissions>
+    <admin_permission admin_permission_id="userPromotions" display_order="265"/>
+  </admin_permissions>
+  <admin_style_properties/>
+  <admin_templates>
+    <template title="th_user_field_options_userpromotions"><![CDATA[<xen:foreach loop="$userCriteriaData.userFieldGroups" key="$userFieldGroupId" value="$userFieldGroup" i="$i">
+	<xen:if is="{$userFieldGroup.userFields}">
+		<h3 class="sectionHeader">{$userFieldGroup.label}</h3>
+		<xen:foreach loop="$userFieldGroup.userFields" key="$userFieldId" value="$userField">
+			<dl class="ctrlUnit">
+				<dt><label for="userField_{$userField.field_id}">{$userField.title}:</label></dt>
+				<dd>
+					<ul>
+						<li><label>
+							<input type="checkbox" class="Disabler" id="promotionUserField_{$userField.field_id}" {xen:checked 'array_key_exists({$userField.field_id}, {$customFields})'} />
+							{xen:phrase th_set_user_value_to_userpromotions}:
+							</label>
+							<div id="promotionUserField_{$userField.field_id}_Disabler" class="criteriaQualifier">
+								<xen:if is="{$userField.field_type} == 'textbox'">
+									<xen:textbox
+										name="custom_fields[{$userField.field_id}]" id="ctrl_custom_field_{$userField.field_id}"
+										value="{$customFields.{$userField.field_id}}" maxlength="{xen:if $userField.max_length, $userField.max_length}"
+										data-validatorname="custom_field_{$userField.field_id}"
+									/>
+								<xen:elseif is="{$userField.field_type} == 'textarea'" />
+									<xen:textbox
+										name="custom_fields[{$userField.field_id}]" id="ctrl_custom_field_{$userField.field_id}"
+										value="{$customFields.{$userField.field_id}}" rows="2" inputclass="Elastic"
+										data-validatorname="custom_field_{$userField.field_id}"
+									/>
+								<xen:elseif is="{$userField.field_type} == 'radio'" />
+									<xen:radio
+										name="custom_fields[{$userField.field_id}]" id="ctrl_custom_field_{$userField.field_id}" value="{$customFields.{$userField.field_id}}"
+									>
+										<xen:option value=""><span class="muted">{xen:phrase no_selection}</span></xen:option>
+										<xen:foreach loop="$userField.choices" key="$key" value="$value">
+											<xen:option value="{$key}" label="{$value}" />
+										</xen:foreach>
+									</xen:radio>
+								<xen:elseif is="{$userField.field_type} == 'select'" />
+									<xen:select
+										name="custom_fields[{$userField.field_id}]" id="ctrl_custom_field_{$userField.field_id}" value="{$customFields.{$userField.field_id}}"
+									>
+										<xen:option value="">&nbsp;</xen:option>
+										<xen:foreach loop="$userField.choices" key="$key" value="$value">
+											<xen:option value="{$key}" label="{$value}" />
+										</xen:foreach>
+									</xen:select>
+								<xen:elseif is="{$userField.field_type} == 'checkbox'" />
+									<xen:checkbox
+										name="custom_fields[{$userField.field_id}]" id="ctrl_custom_field_{$userField.field_id}" value="{$customFields.{$userField.field_id}}"
+									>
+										<xen:foreach loop="$userField.choices" key="$key" value="$value">
+											<xen:option value="{$key}" label="{$value}"
+												selected="isset({$customFields.{$userField.field_id}.{$_choiceId}})" />
+										</xen:foreach>
+									</xen:checkbox>
+								<xen:elseif is="{$userField.field_type} == 'multiselect'" />
+									<xen:select
+										name="custom_fields[{$userField.field_id}]" id="ctrl_custom_field_{$userField.field_id}" value="{xen:raw {$customFields.{$userField.field_id}}}"
+										size="7" multiple="multiple"
+									>
+										<xen:foreach loop="$userField.choices" key="$key" value="$value">
+											<xen:option value="{$key}" label="{$value}"
+												selected="isset({$customFields.{$userField.field_id}.{$_choiceId}})" />
+										</xen:foreach>
+									</xen:select>
+								</xen:if>
+							</div>
+						</li>
+					</ul>
+				</dd>
+			</dl>
+		</xen:foreach>
+	</xen:if>
+</xen:foreach>
+<input type="hidden" name="custom_fields_shown" value="1" />]]></template>
+  </admin_templates>
+  <admin_template_modifications>
+    <modification template="quicksearch_promotions" modification_key="th_quicksearchPromotionsLinks_userPromotions" description="Change user-group-promotions links to user-promotions." execution_order="10" enabled="1" action="str_replace">
+      <find><![CDATA[{xen:adminlink user-group-promotions]]></find>
+      <replace><![CDATA[{xen:adminlink user-promotions]]></replace>
+    </modification>
+    <modification template="quicksearch_promotions" modification_key="th_quicksearchPromotions_userPromotions" description="Rename &quot;User Group Promotions&quot; to &quot;User Promotions&quot;." execution_order="10" enabled="1" action="str_replace">
+      <find><![CDATA[{xen:phrase user_group_promotions}]]></find>
+      <replace><![CDATA[{xen:phrase th_user_promotions_userpromotions}]]></replace>
+    </modification>
+    <modification template="tools_rebuild" modification_key="th_toolsRebuild_userPromotions" description="Rename &quot;User Group Promotions&quot; to &quot;User Promotions&quot;." execution_order="10" enabled="1" action="str_replace">
+      <find><![CDATA[{xen:phrase rebuild_user_group_promotions}]]></find>
+      <replace><![CDATA[{xen:phrase th_rebuild_user_promotions_userpromotions}]]></replace>
+    </modification>
+    <modification template="user_group_promotion_delete" modification_key="th_userGroupPromotionDelLinks_userPromotions" description="Change user-group-promotions links to user-promotions." execution_order="10" enabled="1" action="str_replace">
+      <find><![CDATA[{xen:adminlink 'user-group-promotions]]></find>
+      <replace><![CDATA[{xen:adminlink 'user-promotions]]></replace>
+    </modification>
+    <modification template="user_group_promotion_demote" modification_key="th_userGroupPromotionDemLinks_userPromotions" description="Change user-group-promotions links to user-promotions." execution_order="10" enabled="1" action="str_replace">
+      <find><![CDATA[{xen:adminlink 'user-group-promotions]]></find>
+      <replace><![CDATA[{xen:adminlink 'user-promotions]]></replace>
+    </modification>
+    <modification template="user_group_promotion_edit" modification_key="th_userGroupPromotionEdiLinks_userPromotions" description="Change user-group-promotions links to user-promotions." execution_order="10" enabled="1" action="str_replace">
+      <find><![CDATA[{xen:adminlink 'user-group-promotions]]></find>
+      <replace><![CDATA[{xen:adminlink 'user-promotions]]></replace>
+    </modification>
+    <modification template="user_group_promotion_edit" modification_key="th_userGroupPromotionEdit_userPromotions" description="Adds 'Custom Field Options' tab." execution_order="10" enabled="1" action="preg_replace">
+      <find><![CDATA[#(<li class="active"><a>{xen:phrase promotion_options}</a></li>)(.*<xen:checkboxunit label="{xen:phrase add_user_to_user_groups}:".*</xen:checkboxunit>\s*</fieldset>)(.*</li>)#Us]]></find>
+      <replace><![CDATA[${1}
+<li><a>{xen:phrase th_custom_field_options_userpromotions}</a></li>
+${2}
+${3}
+<li><xen:include template="th_user_field_options_userpromotions" /></li>]]></replace>
+    </modification>
+    <modification template="user_group_promotion_history" modification_key="th_userGroupPromotionHisLinks_userPromotions" description="Change user-group-promotions links to user-promotions." execution_order="10" enabled="1" action="str_replace">
+      <find><![CDATA[{xen:adminlink user-group-promotions]]></find>
+      <replace><![CDATA[{xen:adminlink user-promotions]]></replace>
+    </modification>
+    <modification template="user_group_promotion_list" modification_key="th_userGroupPromotionLisLinks_userPromotions" description="Change user-group-promotions links to user-promotions." execution_order="10" enabled="1" action="str_replace">
+      <find><![CDATA[{xen:adminlink user-group-promotions]]></find>
+      <replace><![CDATA[{xen:adminlink user-promotions]]></replace>
+    </modification>
+    <modification template="user_group_promotion_list" modification_key="th_userGroupPromotionList_userPromotions" description="Rename &quot;User Group Promotions&quot; to &quot;User Promotions&quot;." execution_order="10" enabled="1" action="str_replace">
+      <find><![CDATA[{xen:phrase user_group_promotions}]]></find>
+      <replace><![CDATA[{xen:phrase th_user_promotions_userpromotions}]]></replace>
+    </modification>
+    <modification template="user_group_promotion_manage" modification_key="th_userGroupPromotionManLinks_userPromotions" description="Change user-group-promotions links to user-promotions." execution_order="10" enabled="1" action="str_replace">
+      <find><![CDATA[{xen:adminlink user-group-promotions]]></find>
+      <replace><![CDATA[{xen:adminlink user-promotions]]></replace>
+    </modification>
+  </admin_template_modifications>
+  <code_events/>
+  <code_event_listeners>
+    <listener event_id="controller_pre_dispatch" execute_order="10" callback_class="ThemeHouse_Listener_ControllerPreDispatch" callback_method="controllerPreDispatch" active="1" hint="" description=""/>
+    <listener event_id="file_health_check" execute_order="10" callback_class="ThemeHouse_UserPromotions_Listener_FileHealthCheck" callback_method="fileHealthCheck" active="1" hint="" description=""/>
+    <listener event_id="init_dependencies" execute_order="10" callback_class="ThemeHouse_Listener_InitDependencies" callback_method="initDependencies" active="1" hint="" description=""/>
+    <listener event_id="load_class" execute_order="10" callback_class="ThemeHouse_UserPromotions_Listener_LoadClass" callback_method="loadClassRoutePrefix" active="0" hint="XenForo_Route_PrefixAdmin_UserGroupPromotions" description="XenForo_Route_PrefixAdmin_UserGroupPromotions (For XenForo 1.2 and above)" compatibility_switch="1"/>
+    <listener event_id="load_class" execute_order="10" callback_class="ThemeHouse_UserPromotions_Listener_LoadClass" callback_method="loadClassDataWriter" active="0" hint="XenForo_DataWriter_UserGroupPromotion" description="XenForo_DataWriter_UserGroupPromotion (For XenForo 1.2 and above)" compatibility_switch="1"/>
+    <listener event_id="load_class" execute_order="10" callback_class="ThemeHouse_UserPromotions_Listener_LoadClass" callback_method="loadClassDeferred" active="0" hint="XenForo_Deferred_UserGroupPromotion" description="XenForo_Deferred_UserGroupPromotion (For XenForo 1.2 and above)" compatibility_switch="1"/>
+    <listener event_id="load_class" execute_order="10" callback_class="ThemeHouse_UserPromotions_Listener_LoadClass" callback_method="loadClassModel" active="0" hint="XenForo_Model_AdminNavigation" description="XenForo_Model_AdminNavigation (For XenForo 1.2 and above)" compatibility_switch="1"/>
+    <listener event_id="load_class" execute_order="10" callback_class="ThemeHouse_UserPromotions_Listener_LoadClass" callback_method="loadClassController" active="0" hint="XenForo_ControllerAdmin_UserGroupPromotion" description="XenForo_ControllerAdmin_UserGroupPromotion (For XenForo 1.2 and above)" compatibility_switch="1"/>
+    <listener event_id="load_class" execute_order="10" callback_class="ThemeHouse_UserPromotions_Listener_LoadClass" callback_method="loadClassModel" active="0" hint="XenForo_Model_UserGroupPromotion" description="XenForo_Model_UserGroupPromotion (For XenForo 1.2 and above)" compatibility_switch="1"/>
+    <listener event_id="load_class" execute_order="10" callback_class="ThemeHouse_UserPromotions_Listener_LoadClass" callback_method="loadClassModel" active="0" hint="XenForo_Model_UserChangeTemp" description="XenForo_Model_UserChangeTemp (For XenForo 1.2 and above)" compatibility_switch="1"/>
+    <listener event_id="load_class_controller" execute_order="10" callback_class="ThemeHouse_UserPromotions_Listener_LoadClass" callback_method="loadClassController" active="1" hint="" description="(For XenForo 1.1 and below)" compatibility_switch="1"/>
+    <listener event_id="load_class_datawriter" execute_order="10" callback_class="ThemeHouse_UserPromotions_Listener_LoadClass" callback_method="loadClassDataWriter" active="1" hint="" description="(For XenForo 1.1 and below)" compatibility_switch="1"/>
+    <listener event_id="load_class_deferred" execute_order="10" callback_class="ThemeHouse_UserPromotions_Listener_LoadClass" callback_method="loadClassDeferred" active="1" hint="" description="(For XenForo 1.1 and below)" compatibility_switch="1"/>
+    <listener event_id="load_class_model" execute_order="10" callback_class="ThemeHouse_UserPromotions_Listener_LoadClass" callback_method="loadClassModel" active="1" hint="" description="(For XenForo 1.1 and below)" compatibility_switch="1"/>
+    <listener event_id="load_class_route_prefix" execute_order="10" callback_class="ThemeHouse_UserPromotions_Listener_LoadClass" callback_method="loadClassRoutePrefix" active="1" hint="" description="(For XenForo 1.1 and below)" compatibility_switch="1"/>
+  </code_event_listeners>
+  <cron/>
+  <email_templates/>
+  <email_template_modifications/>
+  <optiongroups/>
+  <permissions>
+    <permission_groups/>
+    <permissions/>
+    <interface_groups/>
+  </permissions>
+  <phrases>
+    <phrase title="admin_navigation_listUserPromotions" version_id="1427713116" version_string="1.0.0"><![CDATA[List User Promotions]]></phrase>
+    <phrase title="admin_navigation_managePromotedUsers" version_id="1427713116" version_string="1.0.0"><![CDATA[Manage Promoted Users]]></phrase>
+    <phrase title="admin_navigation_userPromotions" version_id="1427713116" version_string="1.0.0"><![CDATA[User Promotions]]></phrase>
+    <phrase title="admin_permission_userPromotions" version_id="1427713116" version_string="1.0.0"><![CDATA[Manage user promotions]]></phrase>
+    <phrase title="th_custom_field_options_userpromotions" version_id="1427713116" version_string="1.0.0"><![CDATA[Custom Field Options]]></phrase>
+    <phrase title="th_rebuild_user_promotions_userpromotions" version_id="1427713116" version_string="1.0.0"><![CDATA[Rebuild User Promotions]]></phrase>
+    <phrase title="th_set_user_value_to_userpromotions" version_id="1427713116" version_string="1.0.0"><![CDATA[Set user value to]]></phrase>
+    <phrase title="th_user_promotions_userpromotions" version_id="1427713116" version_string="1.0.0"><![CDATA[User Promotions]]></phrase>
+  </phrases>
+  <route_prefixes>
+    <route_type type="admin">
+      <prefix original_prefix="user-promotions" class="XenForo_Route_PrefixAdmin_UserGroupPromotions" build_link="data_only"/>
+    </route_type>
+  </route_prefixes>
+  <style_properties/>
+  <templates/>
+  <public_template_modifications>
+    <modification template="footer" modification_key="th_copyrightNotice_userPromotions" description="Copyright notice for [⌂] User Promotions" execution_order="1" enabled="1" action="callback">
+      <find><![CDATA[/{xen:phrase (?:xenforo|extra)_copyright}/]]></find>
+      <replace><![CDATA[ThemeHouse_Listener_InitDependencies::copyrightNotice]]></replace>
+    </modification>
+  </public_template_modifications>
+  <bb_code_media_sites/>
+  <bb_codes/>
+</addon>
